@@ -1,8 +1,0 @@
-# DGX Ollama Console
--r requirements.txt
-
-# Website connector (crawler + index + retrieval API)
--r apotheon_connector/requirements.txt
-
-# MCP connector (repo + website tools)
--r mcp_repo_connector/requirements.txt
