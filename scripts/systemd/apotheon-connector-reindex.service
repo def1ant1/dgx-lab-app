@@ -1,0 +1,12 @@
+[Unit]
+Description=Apotheon Website Connector - Incremental Reindex (build)
+After=network.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/apotheon/connector.env
+WorkingDirectory=/opt/dgx-bundle
+ExecStart=/usr/bin/curl -sS -X POST http://127.0.0.1:8090/reindex \
+  -H "Authorization: Bearer ${CONNECTOR_ADMIN_TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{"mode":"build","changedOnly":true}'

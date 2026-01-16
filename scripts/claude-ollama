@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Force Claude Code to use local Ollama via Anthropic-compatible API.
+export ANTHROPIC_BASE_URL="http://127.0.0.1:11434"
+export ANTHROPIC_API_KEY="ollama"
+export ANTHROPIC_AUTH_TOKEN="ollama"
+
+exec claude "$@"

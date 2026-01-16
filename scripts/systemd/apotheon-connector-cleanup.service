@@ -1,0 +1,7 @@
+[Unit]
+Description=Apotheon Website Connector - Cleanup old reports
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/dgx-bundle
+ExecStart=/opt/dgx-bundle/scripts/maintenance/connector-cleanup.sh

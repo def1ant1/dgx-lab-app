@@ -1,0 +1,13 @@
+[project]
+name = "mcp-repo-connector"
+version = "0.2.0"
+description = "MCP server: sandboxed repo/folder access + website connector tools"
+requires-python = ">=3.10"
+dependencies = [
+  "mcp[cli]>=1.0.0",
+  "pydantic>=2.0.0",
+  "requests>=2.31",
+]
+
+[project.scripts]
+mcp-repo-connector = "mcp_repo_connector.server:main"
