@@ -15,6 +15,9 @@ This bundle packages:
 - Ollama running on the DGX (`ollama serve`), with an embedding model pulled (default: `nomic-embed-text`).
 - Python 3.10+.
 
+Note on ports: This project avoids common dev ports used by websites (3000, 8000).
+It binds to 8080 (console) and 8090 (connector) by default.
+
 ### 1) Start the DGX Ollama Console
 
 ```bash
@@ -24,6 +27,12 @@ make run-console
 Console:
 - UI: http://127.0.0.1:8080
 - API: http://127.0.0.1:8080/api/status
+
+Manual (without Makefile):
+```
+uvicorn dgx_ollama_console.main:app --app-dir . --host 127.0.0.1 --port 8080
+```
+Entrypoint: `dgx_ollama_console/main.py:1`
 
 ### 2) Generate Claude Code env exports (Ollama-backed)
 
@@ -42,9 +51,15 @@ make claude-env-tailscale
 By default it crawls a local dev server at `http://127.0.0.1:5173`.
 
 ```bash
-export CONNECTOR_TARGET_URL="http://127.0.0.1:5173"   # change this
+export CONNECTOR_TARGET_URL="http://127.0.0.1:5173"   # set your website base URL
 make run-connector
 ```
+
+Manual (without Makefile):
+```
+uvicorn apotheon_connector.app.main:app --app-dir . --host 127.0.0.1 --port 8090
+```
+Entrypoint: `apotheon_connector/app/main.py:1`
 
 Connector API:
 - http://127.0.0.1:8090/health
@@ -79,16 +94,19 @@ make run-mcp-stdio
 
 ### Bearer token
 
-Set a token to protect the Website Connector API:
+Set tokens to protect the Website Connector API:
 
 ```bash
-export CONNECTOR_TOKEN="your-long-random-token"
-
-# optional (defaults to CONNECTOR_TOKEN)
-export CONNECTOR_ADMIN_TOKEN="your-long-random-admin-token"
+export CONNECTOR_TOKEN="your-long-random-token"           # used by clients (e.g., MCP)
+export CONNECTOR_ADMIN_TOKEN="your-long-random-admin-token" # optional; falls back to CONNECTOR_TOKEN
 ```
 
-Then send `Authorization: Bearer <token>` to the connector endpoints. The MCP server will forward the token automatically if `CONNECTOR_TOKEN` is set.
+Then send `Authorization: Bearer <token>` to the connector endpoints.
+The Website Connector accepts:
+- read token from `CONNECTOR_READ_TOKEN` or `CONNECTOR_TOKEN`
+- admin token from `CONNECTOR_ADMIN_TOKEN` or `CONNECTOR_TOKEN`
+
+The MCP server forwards `CONNECTOR_TOKEN` automatically if set.
 
 ### Sandbox roots (MCP)
 
@@ -117,6 +135,12 @@ Location: `apotheon_connector/`
 - Uses **Chroma** for fast local persistent vector storage (`./.chroma`).
 - Uses **Ollama embeddings** (default model: `nomic-embed-text`).
 
+Environment variables:
+- `CONNECTOR_TARGET_URL` (preferred) or `CONNECTOR_BASE_URL` – website base to crawl
+- `CONNECTOR_CHROMA_DIR` – chroma storage directory (default: `./.chroma`)
+- `CONNECTOR_TOKEN` / `CONNECTOR_READ_TOKEN` – bearer for read endpoints
+- `CONNECTOR_ADMIN_TOKEN` – bearer for admin endpoints
+
 ### MCP Connector
 Location: `mcp_repo_connector/`
 
@@ -126,4 +150,3 @@ Location: `mcp_repo_connector/`
 
 - `scripts/claude-ollama` – runs Claude Code with env vars pointing to local Ollama.
 - `scripts/claude-anthropic` – runs Claude Code without the Ollama base URL override (for future Anthropic use).
-

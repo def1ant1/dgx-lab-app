@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Header, HTTPException
-from core.config import READ_TOKEN, ADMIN_TOKEN
+from .core.config import READ_TOKEN, ADMIN_TOKEN
 
 app = FastAPI(title='Apotheon Website Connector', version='0.5.0')
 
